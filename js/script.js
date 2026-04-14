@@ -7,8 +7,9 @@ const userInput = document.getElementById("userInput");
 const selectedProductsList = document.getElementById("selectedProductsList");
 const generateRoutine = document.getElementById("generateRoutine");
 
-//Cloudflare Worker URL
-const workerURL = "https://loreal-worker.elipantoine.workers.dev/";
+/* API configuration */
+const workerURL = null; // Set to your Cloudflare Worker URL if using a proxy, e.g., 'https://your-worker.your-domain.com/api'
+const apiURL = workerURL || 'https://api.openai.com/v1/chat/completions';
 
 /* Array to store conversation messages */
 let messages = [];
@@ -161,7 +162,7 @@ generateRoutine.addEventListener("click", async () => {
 
   try {
     /* Send the conversation to OpenAI API */
-    const response = await fetch(workerURL, {
+    const response = await fetch(apiURL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -217,7 +218,7 @@ chatForm.addEventListener("submit", async (e) => {
 
   try {
     /* Send the conversation to OpenAI API */
-    const response = await fetch(workerURL, {
+    const response = await fetch(apiURL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
