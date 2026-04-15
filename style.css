@@ -7,7 +7,7 @@
 
 /* —— body + fonts —— */
 body {
-  font-family: "Montserrat", Arial, Helvetica, sans-serif;
+  font-family: "Montserrat ExtraBold", Arial, Helvetica, sans-serif;
   color: #333;
   display: flex;
   justify-content: center;
@@ -49,7 +49,7 @@ body {
   border: 2px solid #000;
   border-radius: 8px;
   cursor: pointer;
-  background-color: white;
+  background-color: #e3a535;
   font-weight: 500;
 }
 
@@ -118,7 +118,7 @@ body {
 .chat-form button {
   font-size: 18px;
   background: #000;
-  color: #fff;
+  color: #ff003b;
   border: none;
   padding: 12px;
   width: 48px;
@@ -242,16 +242,16 @@ body {
   padding: 16px;
   font-size: 18px;
   font-weight: 500;
-  color: #fff;
-  background: #000;
-  border: none;
+  color: black;
+  background: #e3a535;
+  border: black 2px solid;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s;
 }
 
 .generate-btn:hover {
-  background: #666;
+  background: #805e1e;
 }
 
 .generate-btn i {
