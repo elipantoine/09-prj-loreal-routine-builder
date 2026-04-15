@@ -81,6 +81,10 @@ body {
   margin-bottom: 20px;
 }
 
+.chat-window .message {
+  margin-bottom: 16px;
+}
+
 /* placeholder message */
 .placeholder-message {
   width: 100%;

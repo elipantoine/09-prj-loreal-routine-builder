@@ -8,10 +8,18 @@ const selectedProductsList = document.getElementById("selectedProductsList");
 const generateRoutine = document.getElementById("generateRoutine");
 
 //Cloudflare Worker URL
-const workerURL = "https://loreal-worker.elipantoine.workers.dev/";
+const workerURL = "https://newloreal.elipantoine.workers.dev/";
 
-/* Array to store conversation messages */
-let messages = [];
+  /* Initialize array of messages with system prompt and initial assistant message */
+let messages = [
+    {
+      role: "system",
+      content: `You are an advisor for L'Oréal products. Guide the user through a short conversation by asking 2-3 questions about their skin type and main concerns. Then, recommend the best care routine based on their answers, using only products from the available list. Respond in a friendly, natural, conversational tone. Use line breaks, bullet points, and indentations to make recommendations clear and easy to read. When recommending products, use their exact name and brand. Keep responses helpful and concise.`
+    },
+    {
+      role: "assistant",
+      content: "Hi! Let's find the perfect routine for you. "}
+  ];
 
 /* Array to store product data */
 let products = [];
@@ -22,19 +30,7 @@ let selectedProducts = [];
 /* Load product data and initialize chat */
 (async function initializeApp() {
   products = await loadProducts();
-
-  /* Initialize messages with system prompt and initial assistant message */
-  messages = [
-    {
-      role: "system",
-      content: `You are a skincare advisor for L'Oréal products. Guide the user through a short conversation by asking 2-3 questions about their skin type and main concerns. Then, recommend the best care routine based on their answers, using only products from the available list. Respond in a friendly, natural, conversational tone. Use line breaks, bullet points, and indentations to make recommendations clear and easy to read. When recommending products, use their exact name and brand. Keep responses helpful and concise.`
-    },
-    {
-      role: "assistant",
-      content: "Hi! Let's find the perfect skincare routine for you. What's your skin type? (normal, dry, oily, sensitive, or acne-prone)"
-    }
-  ];
-
+  
   /* Render the initial chat */
   renderChat();
 })();
@@ -154,9 +150,8 @@ generateRoutine.addEventListener("click", async () => {
     return;
   }
 
-  const prompt = `Create a skincare routine using these selected products: ${selectedProducts.map(p => `${p.brand} ${p.name}`).join(', ')}. Suggest the order of application and how to use them for the best results.`;
-
-  messages.push({ role: "user", content: prompt });
+  messages.push({ role: "user", content: `Create a care routine using these selected products: ${selectedProducts.map(p => `${p.brand} ${p.name}`).join(', ')}. Suggest the order of application and how to use them for the best results.`
+  });
   renderChat();
 
   try {
@@ -165,12 +160,9 @@ generateRoutine.addEventListener("click", async () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o",
         messages: messages,
-        temperature: 0.7,
       }),
     });
 
@@ -183,7 +175,7 @@ generateRoutine.addEventListener("click", async () => {
     }
 
     /* Get the AI's response */
-    const aiResponse = data.choices[0].message.content;
+    const aiResponse = data?.choices?.[0]?.message?.content || "No response";
 
     /* Add AI response to conversation */
     messages.push({ role: "assistant", content: aiResponse });
@@ -216,17 +208,14 @@ chatForm.addEventListener("submit", async (e) => {
   renderChat();
 
   try {
-    /* Send the conversation to OpenAI API */
+    /* Send the conversation to the worker */
     const response = await fetch(workerURL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o",
         messages: messages,
-        temperature: 0.7,
       }),
     });
 
@@ -249,7 +238,7 @@ chatForm.addEventListener("submit", async (e) => {
   } catch (error) {
     console.error("Error communicating with OpenAI:", error);
     /* Display error message in chat */
-    messages.push({ role: "assistant", content: "Sorry, there was an error. Please try again." });
+    messages.push({ role: "assistant", content: "Sorry, there was an error." + error.message + " Please try again." });
     renderChat();
   }
 });
